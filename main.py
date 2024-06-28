@@ -3,7 +3,7 @@
 import pandas as pd
 import geopandas as gpd
 import plotly.express as px
-##
+import os
 # Dash App specific libraries 
 from dash import Dash
 from dash import dcc
@@ -77,5 +77,9 @@ def display_choropleth(metric):
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
     return fig
 
-if __name__ == "__main__":
-    app.run_server(debug=True)
+# if __name__ == "__main__":
+#     app.run_server(debug=True)
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 10000))
+    app.run_server(debug=True, host='0.0.0.0', port=port)
