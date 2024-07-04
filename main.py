@@ -37,6 +37,8 @@ app.layout = html.Div([
 
     html.Div([
         html.Div([
+
+            # metric choice
             html.H4('Select a metric'),
             dcc.Dropdown(
                     id='metric',
@@ -46,19 +48,30 @@ app.layout = html.Div([
                         {'label': 'Population Characteristics %', 'value': 'Pop. Char. Pctl'}
                     ],
                     value='CES 4.0 Percentile',
-                    # clearable=False,  # Remove this line if you want the dropdown to be clearable
-                    style={'width': '300px'}  # Adjust the width of the dropdown as needed
-                )
-            ], style={'display': 'inline-block', 'verticalAlign': 'top', 'margin-right': '10px', 'margin-left': '50px'}),
+                    style={'width': '300px'}  
+                ),
+
+            # find location
+            html.H4('Find your census tract'),
+            dcc.Input(
+                id="address",
+                value="",
+                className="w-100",
+                placeholder="street address",
+                style={'width': '300px'},  
+                ),
                 
+            ], style={'display': 'inline-block', 'verticalAlign': 'top', 'margin-right': 'auto', 'margin-left': 'auto'}),
+                
+        # graph display
         html.Div([
             dcc.Graph(id="graph")
-        ], style={'display': 'inline-block', 'width': '80%', 'verticalAlign': 'top'})
-    ], style={'display': 'flex', 'alignItems': 'flex-start'})
+        ], style={'display': 'inline-block', 'verticalAlign': 'top','margin-left': 'auto', 'margin-right': 'auto'})
+    ], style={'display': 'flex', 'alignItems': 'flex-start', 'width': '65%'})
 ], style={
     'textAlign': 'center',
-    "margin-left": "20px",
-    "margin-right": "20px"}
+    "margin-left": "3%",
+    "margin-right": "10%"}
 )
 
 
