@@ -38,15 +38,19 @@ app.layout = html.Div([
     html.Div([
         html.Div([
             html.H4('Select a metric'),
-            dcc.RadioItems(
-                id='metric',
-                options=["Latitude", "Longitude"],
-                value="Latitude",
-                inline=False
-            )
-
-        ], style={'display': 'inline-block', 'verticalAlign': 'top', 'margin-right': '10px', 'margin-left': '100px'}),
-        
+            dcc.Dropdown(
+                    id='metric',
+                    options=[
+                        {'label': 'CES 4.0 %', 'value': 'CES 4.0 Percentile'},
+                        {'label': 'Pollution Burden %', 'value': 'Pollution Burden Pctl'},
+                        {'label': 'Population Characteristics %', 'value': 'Pop. Char. Pctl'}
+                    ],
+                    value='CES 4.0 Percentile',
+                    # clearable=False,  # Remove this line if you want the dropdown to be clearable
+                    style={'width': '300px'}  # Adjust the width of the dropdown as needed
+                )
+            ], style={'display': 'inline-block', 'verticalAlign': 'top', 'margin-right': '10px', 'margin-left': '50px'}),
+                
         html.Div([
             dcc.Graph(id="graph")
         ], style={'display': 'inline-block', 'width': '80%', 'verticalAlign': 'top'})
@@ -69,16 +73,13 @@ def display_choropleth(metric):
                         locations=data.index,
                         color=metric,  # where the plot changes via input
                         hover_name="Census Tract",
-                        hover_data=["Longitude"],
+                        hover_data=["CES 4.0 Percentile"],
                         projection="mercator")
 
     fig.update_geos(fitbounds="locations", visible=False)
     fig.update_layout(coloraxis_colorbar_x=0.7)
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
     return fig
-
-# if __name__ == "__main__":
-#     app.run_server(debug=True)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 10000))
