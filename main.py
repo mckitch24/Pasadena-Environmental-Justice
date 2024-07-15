@@ -135,10 +135,9 @@ def display_choropleth(address, metric):
                         color=metric,  # where the plot changes via input
                         hover_name="Census Tract",
                         hover_data=["CES 4.0 Percentile"],
-                        center = {"lat": 34.154251, "lon": -118.138472},
+                        center = {"lat": 34.18, "lon": -118.13},
                         color_continuous_scale='RdYlGn',
-                        zoom = 10,
-                        
+                        zoom = 10.5,
                         range_color=(0, 100))        
     fig.update_traces(marker_opacity=0.6)
 
@@ -159,6 +158,12 @@ def display_choropleth(address, metric):
             )
 
     fig.update_layout(mapbox_style="carto-positron")
+    # ,
+    #                   bounds = dict(bounds_east = 37,
+    #                                 bounds_west = 33,
+    #                                 bounds_north = -115,
+    #                                 bounds_south = -120
+    #                                 ))
     
 
     fig.update_layout(coloraxis_colorbar_x=1.2)
