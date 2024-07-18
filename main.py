@@ -3,7 +3,6 @@ import pandas as pd
 import geopandas as gpd
 import plotly.express as px
 import os
-import censusgeocode as cg
 import plotly.graph_objects as go
 
 
@@ -15,18 +14,14 @@ from dash import Input, Output
 from dash.exceptions import PreventUpdate
 
 
-# function
-def address_to_tract(address):
-    result = cg.address(address, city='Pasadena', state='CA', returntype = 'geographies')
-    tract = result[0]['geographies']['Census Tracts'][0]['GEOID']
-    return tract
+import functions
 
 # DATA SET UP
 
 # CalEnviroScreen
 california_EJ = pd.read_excel('data/calenviroscreen40resultsdatadictionary_F_2021.xlsx')
 pasadena_EJ = california_EJ[california_EJ['Approximate Location'].str.contains('Pasadena', na=False)]
-
+# print(pasadena_EJ.shape)
 # Census Tract Shaefiles
 tracts = gpd.read_file('data/cb_2018_06_tract_500k')
 tracts['GEOID'] = tracts['GEOID'].astype('int64') # to allow a merge
@@ -77,9 +72,12 @@ app.layout = html.Div([
             ],
             style={'margin-bottom': '15px'}  
             ),
-            html.Div(id='tract-output', style={'margin-top': '15px'})
+            html.Div(id='tract-output', style={'margin-top': '15px'}),
+            html.A("Find your Pasadena City district", 
+                   href="https://www.cityofpasadena.net/find-my-district/", 
+                   target="_blank")
         ],
-        style={'display': 'inline-block', 'width': '25%', 'verticalAlign': 'top', 'margin-right': '5%'}),  
+        style={'display': 'inline-block', 'width': '25%', 'verticalAlign': 'top', 'margin-right': '5%'}),  # Adjusted width to 30%
 
         # Right column
         html.Div([
@@ -103,7 +101,7 @@ def display_choropleth(address, metric):
     # census tract from address
     if address:
         try:
-            tract = address_to_tract(address)
+            tract = functions.address_to_tract(address)
             tract_output = f'Tract number {tract}'
         except Exception:
             raise PreventUpdate
