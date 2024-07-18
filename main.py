@@ -1,4 +1,3 @@
-
 # general libaries 
 import pandas as pd
 import geopandas as gpd
@@ -13,7 +12,6 @@ from dash import Dash
 from dash import dcc
 from dash import html
 from dash import Input, Output
-# from functions import address_to_tract  # Importing the function from geocoding.py
 from dash.exceptions import PreventUpdate
 
 
@@ -23,7 +21,7 @@ def address_to_tract(address):
     tract = result[0]['geographies']['Census Tracts'][0]['GEOID']
     return tract
 
-# Data set-up
+# DATA SET UP
 
 # CalEnviroScreen
 california_EJ = pd.read_excel('data/calenviroscreen40resultsdatadictionary_F_2021.xlsx')
@@ -37,24 +35,22 @@ tracts['GEOID'] = tracts['GEOID'].astype('int64') # to allow a merge
 data = tracts.merge(pasadena_EJ, left_on='GEOID', right_on='Census Tract')
 
 
-# Create an instance of the dash class
-
+# DASH APP STARTS
 app = Dash(__name__)
 
-app.layout = html.Div([
-    html.H4('Pasadena Environmental Justice Communities'),
 
-    html.Div(children='''
-        A visualization of environmental and socioeconomic CalEnviroScreen metrics
-    '''),
+app.layout = html.Div([
+    # Title and description centered
+    html.Div([
+        html.H4('Pasadena Environmental Justice Communities', style={'text-align': 'center'}),
+        html.Div('A visualization of environmental and socioeconomic CalEnviroScreen metrics', style={'text-align': 'center', 'margin-bottom': '20px'})
+    ]),
 
     html.Div([
+        # Left column
         html.Div([
-
-            # metric choice
-            
-            html.H4('Select a metric'),
-            html.Div(
+            html.Div([
+                html.H4('Select a metric'),
                 dcc.Dropdown(
                     id='metric',
                     options=[
@@ -63,38 +59,39 @@ app.layout = html.Div([
                         {'label': 'Population Characteristics', 'value': 'Pop. Char. Pctl'}
                     ],
                     value='CES 4.0 Percentile',
-                    style={'width': '300px'}  
+                    style={'width': '100%'}  
                 ),
-                style={'margin-bottom': '20px'}  # Add margin to space out elements
+            ],
+            style={'margin-bottom': '15px'}  
             ),
 
-            # find location
-            html.H4('Find your census tract'),
-            html.Div(
+            html.Div([
+                html.H4('Find your census tract'),
                 dcc.Input(
                     id="address",
                     value="",
                     className="w-100",
-                    placeholder="street address",
-                    style={'width': '300px'},
+                    placeholder="Enter street address",
+                    style={'width': '100%'},  
                 ),
-                style={'margin-bottom': '20px'}  # Add margin to space out elements
+            ],
+            style={'margin-bottom': '15px'}  
             ),
-            html.Div(id='tract-output', style={'margin-top': '20px'})
-            ], style={'display': 'inline-block', 'verticalAlign': 'top', 'margin-right': 'auto', 'margin-left': 'auto','width': '30%'}),
-                
-        # graph display
+            html.Div(id='tract-output', style={'margin-top': '15px'})
+        ],
+        style={'display': 'inline-block', 'width': '25%', 'verticalAlign': 'top', 'margin-right': '5%'}),  
+
+        # Right column
         html.Div([
-            dcc.Graph(id="graph")
-        ], style={'display': 'inline-block', 'verticalAlign': 'top','margin-left': 'auto', 'margin-right': 'auto','width': '70%'})
-    ], style={'display': 'flex', 'alignItems': 'flex-start','width': '100%'})
-], style={
-    'textAlign': 'center',
-    "margin-left": "3%",
-    "margin-right": "3%"}
-)
-
-
+            dcc.Graph(
+                id="graph",
+            )
+        ],
+        style={'display': 'inline-block', 'width': '68%', 'verticalAlign': 'top', 'margin-top': '20px'})  # Adjusted width to 68% and added margin-top
+    ],
+    style={'display': 'flex', 'alignItems': 'flex-start', 'justifyContent': 'center', 'margin-left': '3%', 'margin-right': '3%'}  # Adjusted margins
+    )
+])
 
 @app.callback(
     Output("tract-output", "children"),
@@ -103,7 +100,7 @@ app.layout = html.Div([
     Input("metric",'value'))
 
 def display_choropleth(address, metric):
-
+    # census tract from address
     if address:
         try:
             tract = address_to_tract(address)
@@ -115,20 +112,6 @@ def display_choropleth(address, metric):
         tract = None
 
     # general code for map
-
-    # static and no streets
-    # fig = px.choropleth(data,
-    #                     geojson=data.geometry,
-    #                     locations=data.index,
-    #                     color=metric,  # where the plot changes via input
-    #                     hover_name="Census Tract",
-    #                     hover_data=["CES 4.0 Percentile"],
-    #                     projection="mercator",
-    #                     color_continuous_scale='RdYlGn',
-    #                     range_color=(0, 100)) 
-    # fig.update_geos(fitbounds="locations", visible=False)
-
-    # dynamic and with streets
     fig = px.choropleth_mapbox(data,
                         geojson=data.geometry,
                         locations=data.index,
@@ -136,7 +119,7 @@ def display_choropleth(address, metric):
                         hover_name="Census Tract",
                         hover_data=["CES 4.0 Percentile"],
                         center = {"lat": 34.18, "lon": -118.13},
-                        color_continuous_scale='RdYlGn',
+                        color_continuous_scale='RdYlGn_r',
                         zoom = 10.5,
                         range_color=(0, 100))        
     fig.update_traces(marker_opacity=0.6)
@@ -146,7 +129,6 @@ def display_choropleth(address, metric):
         tract_data = data[data['GEOID'] == int(tract)]
         if not tract_data.empty:
             fig.add_trace(
-                # go.Choropleth(
                 go.Choroplethmapbox(
                     geojson=tract_data.geometry.__geo_interface__,
                     locations=tract_data.index,
@@ -157,17 +139,11 @@ def display_choropleth(address, metric):
                 )
             )
 
+    # layout choices
     fig.update_layout(mapbox_style="carto-positron")
-    # ,
-    #                   bounds = dict(bounds_east = 37,
-    #                                 bounds_west = 33,
-    #                                 bounds_north = -115,
-    #                                 bounds_south = -120
-    #                                 ))
-    
-
     fig.update_layout(coloraxis_colorbar_x=1.2)
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+
     return tract_output, fig
 
 if __name__ == '__main__':
