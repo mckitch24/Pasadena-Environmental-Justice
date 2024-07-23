@@ -3,3 +3,8 @@ geopandas>=0.12.2
 plotly>=5.11.0
 dash
 openpyxl
+
+# new editions for geocoding
+censusgeocode
+urllib3==1.26.15 
+requests-toolbelt==0.10.1
