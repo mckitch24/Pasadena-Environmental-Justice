@@ -1,4 +1,4 @@
-# Pasadena-Environmental-Justice Web Application
+# Pasadena Environmental Justice Web Application
 This is a Webb App designed to support the city of Pasadena's Environmental Justice Element to their General Plan. As input, residents can write their street address. The output will be their census tract, which is automatically highlighted. 
 
 Further, residents can decide what type of metric they are interested in showing: CalEnviroScreen's overall score, or the Pollution Burden or Population Characteristic sub-scores. An interactive map displays their metric of choice. Further, the indicators that comprise the relevant score are displayed for the individual's census tract.  
