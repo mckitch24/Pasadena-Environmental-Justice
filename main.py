@@ -12,7 +12,7 @@ from dash import dcc
 from dash import html
 from dash import Input, Output
 from dash.exceptions import PreventUpdate
-
+import numpy as np
 
 import functions
 
@@ -35,12 +35,12 @@ app = Dash(__name__)
 
 
 app.layout = html.Div([
+    html.Div([
     # Title and description centered
     html.Div([
         html.H4('Pasadena Environmental Justice Communities', style={'text-align': 'center'}),
         html.Div('A visualization of environmental and socioeconomic CalEnviroScreen metrics', style={'text-align': 'center', 'margin-bottom': '20px'})
     ]),
-
     html.Div([
         # Left column
         html.Div([
@@ -89,11 +89,19 @@ app.layout = html.Div([
     ],
     style={'display': 'flex', 'alignItems': 'flex-start', 'justifyContent': 'center', 'margin-left': '3%', 'margin-right': '3%'}  # Adjusted margins
     )
-])
+]),
+html.Div([
+            dcc.Graph(
+                id="graph2",
+            )
+        ],
+        style={'display': 'inline-block', 'width': '68%', 'verticalAlign': 'top', 'margin-top': '20px'})  # Adjusted width to 68% and added margin-top
+    ])
 
 @app.callback(
     Output("tract-output", "children"),
     Output("graph", "figure"),
+    Output("graph2", "figure"),
     Input('address', 'value'),
     Input("metric",'value'))
 
@@ -142,7 +150,37 @@ def display_choropleth(address, metric):
     fig.update_layout(coloraxis_colorbar_x=1.2)
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
 
-    return tract_output, fig
+    if tract is not None:
+        tract_df = pasadena_EJ[pasadena_EJ['Census Tract'] == int(tract)]
+    else:
+        tract_df = pd.DataFrame()  # or handle as appropriate if no tract is found
+
+    if not tract_df.empty:
+        if metric == 'CES 4.0 Percentile':
+            x_vals = ['CES 4.0 Percentile', 'Pollution Burden Pctl', 'Pop. Char. Pctl']
+        elif metric == 'Pollution Burden Pctl':
+            x_vals = ['Ozone Pctl', 'PM2.5 Pctl', 'Diesel PM Pctl', 'Drinking Water Pctl', 'Lead Pctl', 'Pesticides Pctl', 'Tox. Release Pctl', 'Traffic Pctl', 'Cleanup Sites Pctl', 'Groundwater Threats Pctl', 'Haz. Waste Pctl', 'Imp. Water Bodies Pctl', 'Solid Waste Pctl']
+        else:
+            x_vals = ['Asthma Pctl', 'Low Birth Weight Pctl', 'Cardiovascular Disease Pctl', 'Education Pctl', 'Linguistic Isolation Pctl', 'Poverty Pctl', 'Unemployment Pctl', 'Housing Burden Pctl']
+        y_vals = tract_df.loc[:, x_vals].iloc[0].values
+
+        trace = go.Bar(
+            x=x_vals,
+            y=y_vals,
+            marker_color='skyblue',
+            # text=y_vals,
+            # textposition='auto',
+        )
+        layout = go.Layout(
+            title='Data for your Census Tract',
+            xaxis=dict(title='Environmental Justice Metric'),
+            yaxis=dict(title='State Percentile', range=[0, 100]),
+        )
+        fig2 = go.Figure(data=[trace], layout=layout)
+    else:
+        fig2 = go.Figure()  # Empty figure if no data found for tract
+
+    return tract_output, fig, fig2
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 10000))
