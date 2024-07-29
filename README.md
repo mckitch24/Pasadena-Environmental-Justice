@@ -1,10 +1,14 @@
 # Pasadena Environmental Justice Web Application
-This is a Webb App designed to support the city of Pasadena's Environmental Justice Element to their General Plan. As input, residents can write their street address. The output will be their census tract, which is automatically highlighted. 
 
-Further, residents can decide what type of metric they are interested in showing: CalEnviroScreen's overall score, or the Pollution Burden or Population Characteristic sub-scores. An interactive map displays their metric of choice. Further, the indicators that comprise the relevant score are displayed for the individual's census tract.  
+We created this Web App to support the city of Pasadena's Environmental Justice Element. As input, residents can write their street address. The output will be their census tract, which we highlight. Further, residents can decide what metric they are interested in showing: CalEnviroScreen's overall score, the Pollution Burden score, or Population Characteristic scores. An interactive map displays their metric of choice. We show the indicators that comprise the relevant score for the individual's census tract in a table below the map. 
 
-We hope that easy access to environmental justice metrics can help make residents more aware of the vulnerabilities they have to climate change, while providing accessible data for them to advocate for themselves. Likewise, we hope these maps can help in city planning, to prioritize fair and just provision of city funds and projects. 
+We hope that easy access to environmental justice metrics can help make residents more aware of their vulnerabilities to climate change while providing accessible data for citizens to advocate for themselves.
 
-All data and code is sourced from publically available websites. Please contact Madeline at madelineceli13@gmail.com for inquiries or issues. 
+From a computational perspective, we use the coding package Python Dash for interactive app development, and Plotly for the graphs. The key inputs are:
+(1) environmental justice data provided at a consistent geographic resolution
+(2) a shape file specifying the boundaries 
+(3) a place linking ones address to the relevant geographic area
 
-Code written by Madeline Kitch. Project advised by Ani Garibyan and Anita Cerna.  
+For (1) we use [CalEnviroScreen data]([url](https://oehha.ca.gov/calenviroscreen/report/calenviroscreen-40)) available at the Census Tract level. For (2) we use publically available data on Census Tract boundaries. For (3) we use a [Python wrapper]([url](https://pypi.org/project/censusgeocode/)) for the US Census Geocoder API.  
+
+Code written by Madeline Kitch. Project advised by Ani Garibyan and Anita Cerna. 
